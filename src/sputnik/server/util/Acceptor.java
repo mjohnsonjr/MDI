@@ -50,7 +50,7 @@ public class Acceptor implements Runnable {
 			
 			/* Add to connection pool */
 			if(clientSocket != null){
-				connection = new Connection( clientSocket, new Player() );
+				connection = new Connection( clientSocket, null );
 				connections.add( connection );
 				connection.start();
 			}

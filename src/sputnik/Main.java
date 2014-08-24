@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.util.Vector;
 
 import sputnik.client.Client;
-import sputnik.server.NetworkManager;
+import sputnik.server.logic.PageTurner;
+import sputnik.server.logic.impl.CountingGame;
 import sputnik.server.util.Connection;
 import sputnik.util.pkt.LoginPacket;
+import sputnik.util.pkt.UDPPacket;
 
 /**
  * THIS IS A TESTING CLASS.
@@ -33,9 +35,8 @@ public class Main {
 		
 		case SERVER:
 			
-			NetworkManager manager = new NetworkManager( connections, port );
-			
-			manager.startConnectionManager();
+			PageTurner pageTurner = new PageTurner(new CountingGame(), 100000000000.0, connections, port);
+			pageTurner.startDefaults();
 			
 			System.out.println("Started Server.");
 			
@@ -46,6 +47,7 @@ public class Main {
 			
 			Client client = new Client( "localhost", port );
 			client.connect();
+			Object udpPacket = null;
 			
 			while(true){
 				
@@ -55,6 +57,19 @@ public class Main {
 				
 				/* Write object */
 				client.getOutputStream().writeObject(packet);
+				
+				try {
+					udpPacket = client.getInputStream().readObject();
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				if( udpPacket instanceof UDPPacket ) { 
+					Long[] counter =  ( Long[] ) ( ( ( UDPPacket ) udpPacket).getData() ); 
+					System.out.println( "THE COUNT!: " + counter[0] );
+					//client.getInputStream().
+				}
 			}
 			
 			

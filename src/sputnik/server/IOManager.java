@@ -1,10 +1,15 @@
 package sputnik.server;
 
+import java.io.IOException;
 import java.util.Vector;
 
 import sputnik.server.util.Connection;
+import sputnik.util.ExceptionHandler;
 import sputnik.util.SThread;
 import sputnik.util.ThreadHandler;
+import sputnik.util.enumeration.ConnectionMode;
+import sputnik.util.pkt.TCPPacket;
+import sputnik.util.pkt.UDPPacket;
 
 public class IOManager implements Runnable {
 
@@ -19,20 +24,6 @@ public class IOManager implements Runnable {
 		this.port = port;
 		this.thread = new SThread(this);
 	}
-	
-	
-	
-	/* Updates all queued client commands */
-	private synchronized void update(){
-		
-		//Go through queue of player commands, updating each player's state accordingly
-		for( Connection c : connections ){
-			   //Process player command, add to command queue for processing.
-			 //process( c.getPlayer().getCommands() );
-		}
-		
-		//Send out the update packet to all players.
-	}
 
 
 	public void start() {
@@ -43,6 +34,26 @@ public class IOManager implements Runnable {
 	public void stop() {
 		
 		ThreadHandler.stopThread( thread );
+	}
+	
+	public void updateClients( TCPPacket tcpPacket, UDPPacket udpPacket ) {
+		
+		//Go through queue of player commands, updating each player's state accordingly
+		for( Connection c : connections ){
+			   //Process player command, add to command queue for processing.
+			 //process( c.getPlayer().getCommands() );
+		}
+		
+		/* Send the servers current state to all clients. */
+		for( Connection c : connections ) {
+			if( c.getConnectionMode() == ConnectionMode.LOGGED_IN ) {
+				try {
+					c.getOutputStream().writeObject( udpPacket );
+				} catch (IOException e) {
+					ExceptionHandler.handleIOException( c );
+				}
+			}
+		}
 	}
 
 	@Override

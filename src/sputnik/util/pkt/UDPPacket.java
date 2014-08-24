@@ -1,29 +1,32 @@
 package sputnik.util.pkt;
 
 import java.io.Serializable;
-import java.util.Vector;
-
-import sputnik.server.util.Connection;
-import sputnik.util.Player;
 
 public class UDPPacket implements Serializable {
 	
 	private static final long serialVersionUID = -4456279889398099120L;
 	
-	private Vector<Connection> connections;
-	private Player thisPlayer;
+	//private Vector<Connection> connections;
+	//private Player thisPlayer;
+	private Object[] data;
 	
-	public Vector<Connection> getConnections() {
-		return connections;
+//	public Vector<Connection> getConnections() {
+//		return connections;
+//	}
+//	public Player getThisPlayer() {
+//		return thisPlayer;
+//	}
+		
+	public Object[] getData() {
+		return data;
 	}
-	public Player getThisPlayer() {
-		return thisPlayer;
+	public void setData(Object[] data) {
+		this.data = data;
 	}
-	
-	public void setConnections(Vector<Connection> connections) {
-		this.connections = connections;
-	}
-	public void setThisPlayer(Player thisPlayer) {
-		this.thisPlayer = thisPlayer;
-	}
+//	public void setConnections(Vector<Connection> connections) {
+//		this.connections = connections;
+//	}
+//	public void setThisPlayer(Player thisPlayer) {
+//		this.thisPlayer = thisPlayer;
+//	}
 }

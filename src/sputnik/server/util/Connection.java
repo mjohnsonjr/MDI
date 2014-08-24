@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+import sputnik.server.database.DatabaseManager;
 import sputnik.util.ExceptionHandler;
 import sputnik.util.Logger;
 import sputnik.util.Player;
@@ -150,9 +151,11 @@ public class Connection implements Runnable {
 							
 							//TODO: Handle this packet.
 							//Query DB, load data, adjust state accoringly.
+							Player player = DatabaseManager.STUBqueryPlayer();
+							this.setPlayer( player );
 							
 							/* After verification, set mode */
-							setConnectionMode(ConnectionMode.LOGGED_IN);
+							this.setConnectionMode( ConnectionMode.LOGGED_IN );
 						}
 					} catch (ClassNotFoundException e) {
 						Logger.log( "CLASS NOT FOUND FATAL " + this.clientSocket.getInetAddress() + ".", LogLevel.STABLE );
@@ -164,7 +167,10 @@ public class Connection implements Runnable {
 					break;
 					
 				case LOGGED_IN:
-					Logger.log( "LOGGED IN " + this.clientSocket.getInetAddress() + ".", LogLevel.STABLE );
+					Logger.log( "LOGGED IN " + this.clientSocket.getInetAddress() + ".", LogLevel.DEBUG );
+					
+					/* Once in LOGGED_IN state, ServerLogic class takes over ALL communications behavior! (updateClients) */
+					
 					
 					break;
 			default:

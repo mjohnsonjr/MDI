@@ -1,9 +1,10 @@
 package sputnik.server;
 
-import java.io.IOException;
 import java.util.Vector;
 
 import sputnik.server.util.Connection;
+import sputnik.util.pkt.TCPPacket;
+import sputnik.util.pkt.UDPPacket;
 
 /**
  * Master of ALL network communications.
@@ -20,19 +21,10 @@ public class NetworkManager {
 	public NetworkManager( Vector<Connection> connections, int port ) {
 		
 		/* Create the connection manager */
-		this.connectionManager = null;
-		connectionManager = new ConnectionManager( connections, port );
-		if(connectionManager != null)
-			connectionManager.startAcceptor();
-		
+		this.connectionManager = new ConnectionManager( connections, port );
 		/* Create the IO (Datagram) Manager */
 		this.ioManager = new IOManager( connections, port );
 		
-		
-	}
-	
-	public NetworkManager( short port ) {
-		this.port = port;
 	}
 	
 	public void startIOManager(){
@@ -60,5 +52,10 @@ public class NetworkManager {
 		stopIOManager();
 		stopConnectionManager();
 	}
-
+	
+	public void updateClients( TCPPacket tcpPacket, UDPPacket udpPacket ) {
+		
+		this.ioManager.updateClients(tcpPacket, udpPacket);
+		
+	}
 }

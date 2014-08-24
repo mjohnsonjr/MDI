@@ -26,7 +26,7 @@ public class Tick {
 		if( deltaT / nsPerTick >= 1){
 			ticks++;
 			prevTime = curTime;
-			deltaT--;
+			deltaT = 0L;
 			return true;
 		}
 		else{

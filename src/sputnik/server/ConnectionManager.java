@@ -39,6 +39,7 @@ public class ConnectionManager implements Runnable {
 	
 	/* Data handling (input from clients) */
 	public void start(){
+		startAcceptor();
 		ThreadHandler.startThread( thread );
 	}
 	

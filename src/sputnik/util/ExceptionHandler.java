@@ -21,7 +21,7 @@ public class ExceptionHandler {
 		// TODO: IO_ERROR will attempt to re-establish in some manner (some class takes over).
 		Logger.log( "FATAL: IO Exception thrown on " + connection.getClientSocket().getInetAddress() + ":" + connection.getClientSocket().getPort() 
 		+ ". Flagging this connection for disconnection.", LogLevel.STABLE );
-		connection.setConnectionMode(ConnectionMode.IO_ERROR );
+		connection.setConnectionMode( ConnectionMode.IO_ERROR );
 		
 	}
 	
