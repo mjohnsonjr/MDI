@@ -16,6 +16,12 @@ public class ExceptionHandler {
 		//TODO:  Maybe reboot? 
 	}
 	
+	public static void handleServerSocketException( ){
+		Logger.log( "FATAL: Socket Exception thrown on datagram socket create.", LogLevel.STABLE );
+		
+		//TODO:  Maybe reboot? 
+	}
+	
 	public static void handleClassNotFoundException( Connection connection ){
 	
 		// TODO: IO_ERROR will attempt to re-establish in some manner (some class takes over).

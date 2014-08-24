@@ -47,11 +47,7 @@ public class IOManager implements Runnable {
 		/* Send the servers current state to all clients. */
 		for( Connection c : connections ) {
 			if( c.getConnectionMode() == ConnectionMode.LOGGED_IN ) {
-				try {
-					c.getOutputStream().writeObject( udpPacket );
-				} catch (IOException e) {
-					ExceptionHandler.handleIOException( c );
-				}
+				c.writeUDPPacket( udpPacket );
 			}
 		}
 	}

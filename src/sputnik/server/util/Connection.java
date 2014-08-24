@@ -1,8 +1,12 @@
 package sputnik.server.util;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.Socket;
 
 import sputnik.server.database.DatabaseManager;
@@ -14,15 +18,25 @@ import sputnik.util.ThreadHandler;
 import sputnik.util.enumeration.ConnectionMode;
 import sputnik.util.enumeration.LogLevel;
 import sputnik.util.pkt.LoginPacket;
+import sputnik.util.pkt.UDPPacket;
 
 public class Connection implements Runnable {
 
 	private Socket clientSocket;
+	private DatagramSocket clientDatagramSocket;
 	private Player player; 
 	private ConnectionMode connectionMode;
-	
 	private ObjectOutputStream outputStream;
 	private ObjectInputStream inputStream;
+	
+	private ObjectOutputStream datagramOutputStream;
+	private ObjectInputStream datagramInputStream;
+	private ByteArrayInputStream byteArrayInputStream;
+	private ByteArrayOutputStream byteArrayOutputStream;
+	private byte[] inputRawData;
+	private byte[] outputRawData;
+	private DatagramPacket inputDatagramPacket;
+	private DatagramPacket outputDatagramPacket;
 	
 	/* Threading */
 	private SThread thread;
@@ -33,14 +47,16 @@ public class Connection implements Runnable {
 	 * some other specific things about this connection.
 	 */
 	
-	public Connection( Socket clientSocket, Player player ) {
+	public Connection( Socket clientSocket, DatagramSocket clientDatagramSocket, Player player ) {
 		
 		this.thread = new SThread(this);
 		this.clientSocket = clientSocket;
+		this.clientDatagramSocket = clientDatagramSocket;
 		this.player = player;
 		this.connectionMode = ConnectionMode.PRE_LOGIN;
 		
-		/* Input and Output Streams */
+		//TODO: Maybe break these into their own class.
+		/* Input and Output Streams (TCP) */
 		try {
 			this.outputStream = new ObjectOutputStream( clientSocket.getOutputStream() );
 		} catch (IOException e) {
@@ -53,7 +69,42 @@ public class Connection implements Runnable {
 			ExceptionHandler.handleIOException( this );
 		}
 		
+		/* Input and Output (Datagram) */
+		this.inputRawData = new byte[ 512 ];
+		this.inputDatagramPacket = new DatagramPacket( this.inputRawData, this.inputRawData.length );
 		
+		this.outputRawData = new byte[ 512 ];
+		this.outputDatagramPacket = new DatagramPacket( this.outputRawData, this.outputRawData.length );
+		
+		try {
+			this.byteArrayOutputStream = new ByteArrayOutputStream( this.outputRawData.length );
+			this.datagramOutputStream = new ObjectOutputStream( this.byteArrayOutputStream );
+		} catch (IOException e) {
+			ExceptionHandler.handleIOException( this );
+		}
+		
+		try {
+			this.byteArrayInputStream = new ByteArrayInputStream( this.inputRawData );
+			this.datagramInputStream = new ObjectInputStream( this.byteArrayInputStream );
+		} catch (IOException e) {
+			ExceptionHandler.handleIOException( this );
+		}
+	}
+	
+	public void writeUDPPacket(UDPPacket udpPacket) {
+		try {
+			this.datagramOutputStream.writeObject( udpPacket );
+		} catch (IOException e) {
+			ExceptionHandler.handleIOException( this );
+		}		
+		
+		/* Write to packet buf location, send. */
+		this.outputRawData = this.byteArrayOutputStream.toByteArray();
+		try {
+			this.clientDatagramSocket.send(this.outputDatagramPacket );
+		} catch (IOException e) {
+			ExceptionHandler.handleIOException( this );
+		}
 	}
 	
 	/* Login packet received from DATA INPUT STREAM */
@@ -106,7 +157,13 @@ public class Connection implements Runnable {
 	public ObjectInputStream getInputStream() {
 		return inputStream;
 	}
+	public ObjectOutputStream getDatagramOutputStream() {
+		return outputStream;
+	}
 
+	public ObjectInputStream getDatagramInputStream() {
+		return inputStream;
+	}
 	public void setPlayer(Player player) {
 		this.player = player;
 	}

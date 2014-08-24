@@ -1,8 +1,10 @@
 package sputnik.server.util;
 
 import java.io.IOException;
+import java.net.DatagramSocket;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.Vector;
 
 import sputnik.util.ExceptionHandler;
@@ -39,6 +41,7 @@ public class Acceptor implements Runnable {
 	@Override
 	public void run() {
 		Socket clientSocket = null;
+		DatagramSocket clientDatagramSocket = null;
 		Connection connection = null;
 		while( thread.isRunning() ){
 			try {
@@ -50,7 +53,12 @@ public class Acceptor implements Runnable {
 			
 			/* Add to connection pool */
 			if(clientSocket != null){
-				connection = new Connection( clientSocket, null );
+				try {
+					clientDatagramSocket = new DatagramSocket( clientSocket.getRemoteSocketAddress() );
+				} catch (SocketException e) {
+					ExceptionHandler.handleServerSocketException( );
+				}
+				connection = new Connection( clientSocket, clientDatagramSocket, null );
 				connections.add( connection );
 				connection.start();
 			}

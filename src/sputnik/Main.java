@@ -8,7 +8,6 @@ import sputnik.server.logic.PageTurner;
 import sputnik.server.logic.impl.CountingGame;
 import sputnik.server.util.Connection;
 import sputnik.util.pkt.LoginPacket;
-import sputnik.util.pkt.UDPPacket;
 
 /**
  * THIS IS A TESTING CLASS.
@@ -58,18 +57,11 @@ public class Main {
 				/* Write object */
 				client.getOutputStream().writeObject(packet);
 				
-				try {
-					udpPacket = client.getInputStream().readObject();
-				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
-				if( udpPacket instanceof UDPPacket ) { 
-					Long[] counter =  ( Long[] ) ( ( ( UDPPacket ) udpPacket).getData() ); 
-					System.out.println( "THE COUNT!: " + counter[0] );
-					//client.getInputStream().
-				}
+//				if( udpPacket instanceof UDPPacket ) { 
+//					Long[] counter =  ( Long[] ) ( ( ( UDPPacket ) udpPacket).getData() ); 
+//					System.out.println( "THE COUNT!: " + counter[0] );
+//					//client.getInputStream().
+//				}
 			}
 			
 			
