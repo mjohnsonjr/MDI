@@ -5,12 +5,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-
-import sputnik.util.ExceptionHandler;
 
 
 
@@ -27,6 +26,7 @@ public class Client {
 	private String hostname;
 	private int port;
 	private Socket socket;
+	private DatagramSocket datagramSocket;
 	
 	private ObjectOutputStream outputStream;
 	private ObjectInputStream inputStream;
@@ -37,6 +37,8 @@ public class Client {
 	private ByteArrayOutputStream byteArrayOutputStream;
 	private byte[] inputRawData;
 	private byte[] outputRawData;
+	private DatagramPacket outputDatagramPacket;
+	private DatagramPacket inputDatagramPacket;
 	
 	
 	public Client( String hostname, int port ) {
@@ -62,6 +64,9 @@ public class Client {
 		return datagramInputStream;
 	}
 
+	public DatagramSocket getDatagramSocket(){
+		return datagramSocket;
+	}
 	
 	public void connect() throws UnknownHostException, SocketException {
 		try {
@@ -85,8 +90,13 @@ public class Client {
 			e.printStackTrace();
 		}
 		
+	    this.datagramSocket = new DatagramSocket( socket.getRemoteSocketAddress() );
+		
 		this.inputRawData = new byte[ 512 ];
+		this.inputDatagramPacket = new DatagramPacket( this.inputRawData, this.inputRawData.length );
+		
 		this.outputRawData = new byte[ 512 ];
+		this.outputDatagramPacket = new DatagramPacket( this.outputRawData, this.outputRawData.length );
 		
 		try {
 			this.byteArrayOutputStream = new ByteArrayOutputStream( this.outputRawData.length );
@@ -95,11 +105,11 @@ public class Client {
 			e.printStackTrace();
 		}
 		
-		try {
-			this.byteArrayInputStream = new ByteArrayInputStream( this.inputRawData );
-			this.datagramInputStream = new ObjectInputStream( this.byteArrayInputStream );
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			this.byteArrayInputStream = new ByteArrayInputStream( this.inputRawData );
+//			this.datagramInputStream = new ObjectInputStream( this.byteArrayInputStream );
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 	}
 }

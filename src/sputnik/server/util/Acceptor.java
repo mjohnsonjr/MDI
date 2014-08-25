@@ -9,7 +9,6 @@ import java.util.Vector;
 
 import sputnik.util.ExceptionHandler;
 import sputnik.util.Logger;
-import sputnik.util.Player;
 import sputnik.util.SThread;
 import sputnik.util.ThreadHandler;
 import sputnik.util.enumeration.LogLevel;

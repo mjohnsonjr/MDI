@@ -1,10 +1,8 @@
 package sputnik.server;
 
-import java.io.IOException;
 import java.util.Vector;
 
 import sputnik.server.util.Connection;
-import sputnik.util.ExceptionHandler;
 import sputnik.util.SThread;
 import sputnik.util.ThreadHandler;
 import sputnik.util.enumeration.ConnectionMode;

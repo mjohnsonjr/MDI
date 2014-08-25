@@ -101,7 +101,8 @@ public class Connection implements Runnable {
 		/* Write to packet buf location, send. */
 		this.outputRawData = this.byteArrayOutputStream.toByteArray();
 		try {
-			this.clientDatagramSocket.send(this.outputDatagramPacket );
+			DatagramPacket packet = new DatagramPacket( this.outputRawData, this.outputRawData.length, this.clientDatagramSocket.getLocalSocketAddress() );
+			clientDatagramSocket.send( packet );
 		} catch (IOException e) {
 			ExceptionHandler.handleIOException( this );
 		}
