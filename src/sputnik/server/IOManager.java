@@ -20,17 +20,15 @@ public class IOManager implements Runnable {
 	public IOManager( Vector<Connection> connections, int port ){
 		this.connections = connections;
 		this.port = port;
-		this.thread = new SThread(this);
+		this.thread = new SThread( this );
 	}
 
 
 	public void start() {
-		
 		ThreadHandler.startThread( thread );
 	}
 	
 	public void stop() {
-		
 		ThreadHandler.stopThread( thread );
 	}
 	
