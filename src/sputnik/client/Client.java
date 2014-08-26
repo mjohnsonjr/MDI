@@ -7,6 +7,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
@@ -90,12 +91,12 @@ public class Client {
 			e.printStackTrace();
 		}
 		
-	    this.datagramSocket = new DatagramSocket( socket.getRemoteSocketAddress() );
+	    this.datagramSocket = new DatagramSocket( new InetSocketAddress( "10.30.1.126", 60014 ) /* socket.getInetAddress() */ );
 		
-		this.inputRawData = new byte[ 512 ];
+		this.inputRawData = new byte[ 1024 ];
 		this.inputDatagramPacket = new DatagramPacket( this.inputRawData, this.inputRawData.length );
 		
-		this.outputRawData = new byte[ 512 ];
+		this.outputRawData = new byte[ 1024 ];
 		this.outputDatagramPacket = new DatagramPacket( this.outputRawData, this.outputRawData.length );
 		
 		try {

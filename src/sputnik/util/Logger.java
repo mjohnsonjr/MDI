@@ -4,7 +4,7 @@ import sputnik.util.enumeration.LogLevel;
 
 public class Logger {
 	
-	private static final LogLevel level = LogLevel.SILENT;
+	private static final LogLevel level = LogLevel.DEBUG;
 
 	
 	public static void log( String s, LogLevel level ){

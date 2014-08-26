@@ -2,6 +2,7 @@ package sputnik.server.util;
 
 import java.io.IOException;
 import java.net.DatagramSocket;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
@@ -53,7 +54,7 @@ public class Acceptor implements Runnable {
 			/* Add to connection pool */
 			if(clientSocket != null){
 				try {
-					clientDatagramSocket = new DatagramSocket( clientSocket.getRemoteSocketAddress() );
+					clientDatagramSocket = new DatagramSocket( new InetSocketAddress("10.30.1.126", 60013) /* socket.getInetAddress() */ );
 				} catch (SocketException e) {
 					ExceptionHandler.handleServerSocketException( );
 				}

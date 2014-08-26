@@ -52,7 +52,7 @@ public class Main {
 			Client client = new Client( "localhost", port );
 			client.connect();
 			Object udpPacket = null;
-			byte[] buf = new byte[512];
+			byte[] buf = new byte[1024];
 			
 			while(true){
 				
@@ -63,13 +63,17 @@ public class Main {
 				/* Write object */
 				client.getOutputStream().writeObject(packet);
 				
+				
 				DatagramPacket datagramPacket = new DatagramPacket( buf, buf.length );
 				
+				System.out.println("1");
 				client.getDatagramSocket().receive( datagramPacket );
-				
+				System.out.println("2");
 				ByteArrayInputStream byteStream = new ByteArrayInputStream( buf );
-                ObjectInputStream is = new ObjectInputStream(new BufferedInputStream( byteStream ) );
-                try {
+                
+				ObjectInputStream is = new ObjectInputStream(new BufferedInputStream( byteStream ) );
+				System.out.println("3");
+				try {
 				     udpPacket = is.readObject();
 				} catch (ClassNotFoundException e) {
 					e.printStackTrace();
@@ -80,8 +84,9 @@ public class Main {
 //				} catch (ClassNotFoundException e) {
 //					e.printStackTrace();
 //				}
-				
+				System.out.println("OUT!");
 				if( udpPacket instanceof UDPPacket ) { 
+					System.out.println("IN!");
 					Long[] counter =  ( Long[] ) ( ( ( UDPPacket ) udpPacket).getData() ); 
 					System.out.println( "THE COUNT!: " + counter[0] );
 					//client.getInputStream().

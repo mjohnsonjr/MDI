@@ -70,10 +70,10 @@ public class Connection implements Runnable {
 		}
 		
 		/* Input and Output (Datagram) */
-		this.inputRawData = new byte[ 512 ];
+		this.inputRawData = new byte[ 1024 ];
 		this.inputDatagramPacket = new DatagramPacket( this.inputRawData, this.inputRawData.length );
 		
-		this.outputRawData = new byte[ 512 ];
+		this.outputRawData = new byte[ 1024 ];
 		this.outputDatagramPacket = new DatagramPacket( this.outputRawData, this.outputRawData.length );
 		
 		try {
@@ -101,6 +101,7 @@ public class Connection implements Runnable {
 		/* Write to packet buf location, send. */
 		this.outputRawData = this.byteArrayOutputStream.toByteArray();
 		try {
+			//THIS DIES
 			DatagramPacket packet = new DatagramPacket( this.outputRawData, this.outputRawData.length, this.clientDatagramSocket.getLocalSocketAddress() );
 			clientDatagramSocket.send( packet );
 		} catch (IOException e) {

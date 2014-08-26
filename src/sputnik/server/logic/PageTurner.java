@@ -37,6 +37,7 @@ public class PageTurner implements Runnable {
 	}
 	
 	public void startDefaults(){
+		this.start();
 		this.ioManager.start();
 		this.connectionManager.start();
 	}
