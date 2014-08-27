@@ -6,51 +6,44 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.Vector;
 
+import sputnik.server.ConnectionManager;
 import sputnik.util.ExceptionHandler;
 import sputnik.util.Logger;
-import sputnik.util.SThread;
-import sputnik.util.ThreadHandler;
 import sputnik.util.enumeration.LogLevel;
 
 public class Acceptor implements Runnable {
-
-	private SThread thread;
-	private Vector<Connection> connections;
 	private ServerSocket socket;
+	private int port;
+	private ConnectionManager con_man;
 	
-	public Acceptor(ServerSocket socket, Vector<Connection> connections ) {
-		
-		this.connections = connections;
-		this.socket = socket;
-		this.thread = new SThread(this);
+	public Acceptor( int port, ConnectionManager con_man ) {
+		this.port = port;
+		this.con_man = con_man;
 	}
-	
-	public void start() {
-		
-		ThreadHandler.startThread( thread );
-	}
-	
-	public void stop() throws InterruptedException {
-		
-		ThreadHandler.stopThread( thread );
-	}
-	
 	
 	@Override
 	public void run() {
+		
+		try {
+			this.socket = new ServerSocket( port );
+		} catch (IOException e) {
+			/* This exception is OKAY, it only occurs on server start. */
+			e.printStackTrace();
+		}
+		
 		Socket clientSocket = null;
 		DatagramSocket clientDatagramSocket = null;
 		Connection connection = null;
-		while( thread.isRunning() ){
+		while( true ){
 			try {
 				clientSocket = socket.accept();
 				Logger.log( "Client at host " + clientSocket.getInetAddress() + ":" + clientSocket.getPort() + ".", LogLevel.DEBUG );
 			} catch (IOException e) {
 				ExceptionHandler.handleServerIOException( );
-			}
-			
+				System.out.println("HOPEFULLY THIS HAPPENED BECAUSE WE WERE SHUTTING DOWN SERVER \n (java has stupid way of stopping blocked threads)");
+				break;
+			} 
 			/* Add to connection pool */
 			if(clientSocket != null){
 				try {
@@ -58,10 +51,22 @@ public class Acceptor implements Runnable {
 				} catch (SocketException e) {
 					ExceptionHandler.handleServerSocketException( );
 				}
-				connection = new Connection( clientSocket, clientDatagramSocket, null );
-				connections.add( connection );
-				connection.start();
+				connection = new Connection( clientSocket, clientDatagramSocket );
+				con_man.add_connection( connection );
+				//TODO:start connection thread here
+				//connection.start();
 			}
+		}
+	}
+	
+	public void shutdown()
+	{
+		try {
+			this.socket.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			System.out.println("IN ACCEPTOR SHUTDOWN METHOD");
+			e.printStackTrace();
 		}
 	}
 }

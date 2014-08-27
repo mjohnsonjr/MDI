@@ -12,9 +12,6 @@ import java.net.Socket;
 import sputnik.server.database.DatabaseManager;
 import sputnik.util.ExceptionHandler;
 import sputnik.util.Logger;
-import sputnik.util.Player;
-import sputnik.util.SThread;
-import sputnik.util.ThreadHandler;
 import sputnik.util.enumeration.ConnectionMode;
 import sputnik.util.enumeration.LogLevel;
 import sputnik.util.pkt.LoginPacket;
@@ -24,7 +21,6 @@ public class Connection implements Runnable {
 
 	private Socket clientSocket;
 	private DatagramSocket clientDatagramSocket;
-	private Player player; 
 	private ConnectionMode connectionMode;
 	private ObjectOutputStream outputStream;
 	private ObjectInputStream inputStream;
@@ -38,8 +34,7 @@ public class Connection implements Runnable {
 	private DatagramPacket inputDatagramPacket;
 	private DatagramPacket outputDatagramPacket;
 	
-	/* Threading */
-	private SThread thread;
+
 	
 	/*
 	 * Add info about authentication..
@@ -47,12 +42,10 @@ public class Connection implements Runnable {
 	 * some other specific things about this connection.
 	 */
 	
-	public Connection( Socket clientSocket, DatagramSocket clientDatagramSocket, Player player ) {
+	public Connection( Socket clientSocket, DatagramSocket clientDatagramSocket) {
 		
-		this.thread = new SThread(this);
 		this.clientSocket = clientSocket;
 		this.clientDatagramSocket = clientDatagramSocket;
-		this.player = player;
 		this.connectionMode = ConnectionMode.PRE_LOGIN;
 		
 		//TODO: Maybe break these into their own class.
@@ -114,16 +107,6 @@ public class Connection implements Runnable {
 		
 	}
 	
-	public void start(){
-
-		ThreadHandler.startThread( thread );
-	}
-	
-	public void stop() throws InterruptedException{
-
-		ThreadHandler.stopThread( thread );
-	}
-	
 	public Socket getClientSocket() {
 		return clientSocket; 
 	}
@@ -149,9 +132,7 @@ public class Connection implements Runnable {
 	public ConnectionMode getConnectionMode() {
 		return connectionMode;
 	}
-	public Player getPlayer(){
-		return player;
-	}
+
 	public ObjectOutputStream getOutputStream() {
 		return outputStream;
 	}
@@ -165,9 +146,6 @@ public class Connection implements Runnable {
 
 	public ObjectInputStream getDatagramInputStream() {
 		return inputStream;
-	}
-	public void setPlayer(Player player) {
-		this.player = player;
 	}
 
 	public void setOutputStream(ObjectOutputStream outputStream) {
@@ -185,7 +163,7 @@ public class Connection implements Runnable {
 	@Override
 	public void run() {
 		
-		while( this.thread.isRunning() ){
+		while( true ){
 			
 			switch( this.connectionMode ){
 				
@@ -210,8 +188,6 @@ public class Connection implements Runnable {
 							
 							//TODO: Handle this packet.
 							//Query DB, load data, adjust state accoringly.
-							Player player = DatabaseManager.STUBqueryPlayer();
-							this.setPlayer( player );
 							
 							/* After verification, set mode */
 							this.setConnectionMode( ConnectionMode.LOGGED_IN );

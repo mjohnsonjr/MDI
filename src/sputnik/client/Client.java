@@ -91,7 +91,7 @@ public class Client {
 			e.printStackTrace();
 		}
 		
-	    this.datagramSocket = new DatagramSocket( 60014, new InetAddress() )/* socket.getInetAddress() */ ;
+	    this.datagramSocket = new DatagramSocket( 60014 )/* socket.getInetAddress() */ ;
 		
 		this.inputRawData = new byte[ 1024 ];
 		this.inputDatagramPacket = new DatagramPacket( this.inputRawData, this.inputRawData.length );

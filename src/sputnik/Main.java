@@ -8,7 +8,7 @@ import java.net.DatagramPacket;
 import java.util.Vector;
 
 import sputnik.client.Client;
-import sputnik.server.logic.PageTurner;
+import sputnik.server.ConnectionManager;
 import sputnik.server.logic.impl.CountingGame;
 import sputnik.server.util.Connection;
 import sputnik.util.pkt.LoginPacket;
@@ -27,9 +27,8 @@ public class Main {
 	
     //private static Mode mode = Mode.SERVER;
 	private static Mode mode = Mode.CLIENT;
-
-	static /* Server Vars */
-	Vector<Connection> connections = new Vector<Connection>();
+	private static ConnectionManager con_manager;
+	
 	static int port = 55555;
 	
 	
@@ -38,10 +37,7 @@ public class Main {
 		switch ( mode ){
 		
 		case SERVER:
-			
-			PageTurner pageTurner = new PageTurner(new CountingGame(), 100000000000.0, connections, port);
-			pageTurner.startDefaults();
-			
+			con_manager = new ConnectionManager(port);
 			System.out.println("Started Server.");
 			
 			break;
@@ -93,11 +89,9 @@ public class Main {
 				}
 			}
 			
-			
 		default:
 			break;
 					
 		}	
 	}
-	
 }
