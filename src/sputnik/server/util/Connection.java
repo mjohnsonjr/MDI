@@ -7,6 +7,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 
 import sputnik.server.database.DatabaseManager;
@@ -30,13 +31,8 @@ public class Connection implements Runnable {
 	private ObjectInputStream inputStream;
 	
 	private ObjectOutputStream datagramOutputStream;
-	private ObjectInputStream datagramInputStream;
-	private ByteArrayInputStream byteArrayInputStream;
 	private ByteArrayOutputStream byteArrayOutputStream;
-	private byte[] inputRawData;
 	private byte[] outputRawData;
-	private DatagramPacket inputDatagramPacket;
-	private DatagramPacket outputDatagramPacket;
 	
 	/* Threading */
 	private SThread thread;
@@ -70,29 +66,17 @@ public class Connection implements Runnable {
 		}
 		
 		/* Input and Output (Datagram) */
-		this.inputRawData = new byte[ 1024 ];
-		this.inputDatagramPacket = new DatagramPacket( this.inputRawData, this.inputRawData.length );
-		
 		this.outputRawData = new byte[ 1024 ];
-		this.outputDatagramPacket = new DatagramPacket( this.outputRawData, this.outputRawData.length );
-		
-		try {
-			this.byteArrayOutputStream = new ByteArrayOutputStream( this.outputRawData.length );
-			this.datagramOutputStream = new ObjectOutputStream( this.byteArrayOutputStream );
-		} catch (IOException e) {
-			ExceptionHandler.handleIOException( this );
-		}
-		
-		try {
-			this.byteArrayInputStream = new ByteArrayInputStream( this.inputRawData );
-			this.datagramInputStream = new ObjectInputStream( this.byteArrayInputStream );
-		} catch (IOException e) {
-			ExceptionHandler.handleIOException( this );
-		}
 	}
 	
 	public void writeUDPPacket(UDPPacket udpPacket) {
 		try {
+			try {
+				this.byteArrayOutputStream = new ByteArrayOutputStream( this.outputRawData.length );
+				this.datagramOutputStream = new ObjectOutputStream( this.byteArrayOutputStream );
+			} catch (IOException e) {
+				ExceptionHandler.handleIOException( this );
+			}
 			this.datagramOutputStream.writeObject( udpPacket );
 		} catch (IOException e) {
 			ExceptionHandler.handleIOException( this );
@@ -101,8 +85,7 @@ public class Connection implements Runnable {
 		/* Write to packet buf location, send. */
 		this.outputRawData = this.byteArrayOutputStream.toByteArray();
 		try {
-			//THIS DIES
-			DatagramPacket packet = new DatagramPacket( this.outputRawData, this.outputRawData.length, this.clientDatagramSocket.getLocalSocketAddress() );
+			DatagramPacket packet = new DatagramPacket( this.outputRawData, this.outputRawData.length, new InetSocketAddress( "127.0.0.1", 60014 ) );
 			clientDatagramSocket.send( packet );
 		} catch (IOException e) {
 			ExceptionHandler.handleIOException( this );

@@ -5,6 +5,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.DatagramPacket;
+import java.util.Arrays;
 import java.util.Vector;
 
 import sputnik.client.Client;
@@ -56,6 +57,8 @@ public class Main {
 			
 			while(true){
 				
+				Arrays.fill(buf, Byte.valueOf((byte) 0));
+				
 				LoginPacket packet = new LoginPacket();
 				packet.setUsername("VOXIDE");
 				packet.setPassword("PASSWORD");
@@ -66,13 +69,11 @@ public class Main {
 				
 				DatagramPacket datagramPacket = new DatagramPacket( buf, buf.length );
 				
-				System.out.println("1");
 				client.getDatagramSocket().receive( datagramPacket );
-				System.out.println("2");
+				
 				ByteArrayInputStream byteStream = new ByteArrayInputStream( buf );
                 
 				ObjectInputStream is = new ObjectInputStream(new BufferedInputStream( byteStream ) );
-				System.out.println("3");
 				try {
 				     udpPacket = is.readObject();
 				} catch (ClassNotFoundException e) {
@@ -84,13 +85,14 @@ public class Main {
 //				} catch (ClassNotFoundException e) {
 //					e.printStackTrace();
 //				}
-				System.out.println("OUT!");
+				
 				if( udpPacket instanceof UDPPacket ) { 
-					System.out.println("IN!");
 					Long[] counter =  ( Long[] ) ( ( ( UDPPacket ) udpPacket).getData() ); 
 					System.out.println( "THE COUNT!: " + counter[0] );
 					//client.getInputStream().
 				}
+				
+				//client.getDatagramSocket().
 			}
 			
 			
