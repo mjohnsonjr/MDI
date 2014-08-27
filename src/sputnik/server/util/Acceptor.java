@@ -54,7 +54,7 @@ public class Acceptor implements Runnable {
 			/* Add to connection pool */
 			if(clientSocket != null){
 				try {
-					clientDatagramSocket = new DatagramSocket( new InetSocketAddress("10.30.1.126", 60013) /* socket.getInetAddress() */ );
+					clientDatagramSocket = new DatagramSocket( 60013 ) /* socket.getInetAddress() */ ;
 				} catch (SocketException e) {
 					ExceptionHandler.handleServerSocketException( );
 				}
